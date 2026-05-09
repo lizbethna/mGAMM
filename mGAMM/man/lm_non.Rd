@@ -29,25 +29,27 @@ where \eqn{X} is the design matrix, \eqn{\beta} is the regression parameters vec
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 \examples{
-n <- 100
-set.seed(123)
+load("data/data_gam.rda")
+attach(data)
+data.lm.non <- list( Y=y , n=length(y),
+                     X=cbind(1,x1,x2) , p=3 )
+para.lm.non <- c("betas","tau")
 
-## Parameters
-tau <- 1.0   # sd
-beta   <- c(1,2,3)   # regression coefficients
+# Stan
+fit.lm.non <- stan("stan/lm_non.stan",
+                   data=data.lm.non)
 
-## explanatory variables
-x1 <- rnorm(n)
-x2 <- rbinom(n,size=1,prob=0.5)
-X = cbind(1,x1,x2)   # design matrix
+# summary, plots
+print(fit.lm.non, pars=para.lm.non)
+stan_trace(fit.lm.non, pars=para.lm.non)
+stan_dens(fit.lm.non, pars=para.lm.non)
 
-## Random error
-epsilon = rnorm(n,mean=0,sd=tau)
-Y = X%*%beta + epsilon
-
-##################################################
-# Fitting
-lm_non(Y,X)
+# criteria
+loo_lm_non = fit.lm.non
+log_lik_lm_non = extract_log_lik(loo_lm_non, merge_chains = F)
+r_eff_lm_non = relative_eff(log_lik_lm_non)
+loo(log_lik_lm_non, r_eff=r_eff_lm_non)
+waic(log_lik_lm_non, r_eff=r_eff_lm_non)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
