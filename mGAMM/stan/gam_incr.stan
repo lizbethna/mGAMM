@@ -72,7 +72,7 @@ model {
     lambda[j] ~ gamma(.05,.005);
   }
   for(j in 1:pIadd){
-    gamasI[j,] ~ multi_normal(zero[(1+1):(1+k1)],K1I[j]);
+    gamasI[j,] ~ multi_normal(zero[(1+1):(1+k1I)],K1I[j]);
     lambdaI[j] ~ gamma(.05,.005);
   }
   Y ~ normal(mu, tau);   // response
